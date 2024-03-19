@@ -1,26 +1,45 @@
-import { useMachine } from "@xstate/react";
-import { createMachine } from "xstate";
+import { useMachine, useSelector } from "@xstate/react";
+import { createMachine, createActor } from "xstate";
 
-export const useToggleMachine = (
-  initialActive: boolean = false
-): [boolean, () => void] => {
-  const [state, send] = useMachine(
-    createMachine({
-      id: "toggle",
-      initial: initialActive ? "active" : "inactive",
-      states: {
-        inactive: {
-          on: { TOGGLE: "active" },
-        },
-        active: {
-          on: { TOGGLE: "inactive" },
+const toggleMachine = createMachine({
+  initial: "inactive",
+  states: {
+    inactive: {
+      on: {
+        TOGGLE: {
+          target: "active",
         },
       },
-    })
-  );
+    },
+    active: {
+      on: {
+        TOGGLE: {
+          target: "inactive",
+        },
+      },
+    },
+  },
+});
 
-  const isActive = state.matches("active");
-  const toggle = () => send({ type: "TOGGLE" });
+export const useToggleMachine = (): [boolean, () => void] => {
+  const toggleActor = createActor(toggleMachine);
+  toggleActor.subscribe((snapshot) => {
+    console.log(snapshot.value); // 'inactive' or 'active'
+  });
+  toggleActor.start();
+  // logs 'inactive'
+
+  toggleActor.send({ type: "TOGGLE" });
+  // logs 'active'
+
+  toggleActor.send({ type: "TOGGLE" });
+  // logs 'inactive'
+
+  const isActive = useSelector(
+    toggleActor,
+    (snapshot) => snapshot.context.user
+  );
+  const toggle = () => toggleActor.send({ type: "TOGGLE" });
 
   return [isActive, toggle];
 };

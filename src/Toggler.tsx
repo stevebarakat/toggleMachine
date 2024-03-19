@@ -1,7 +1,7 @@
 import { useToggleMachine } from "./useToggleMachine";
 
 const Toggler = () => {
-  const [isActive, toggle] = useToggleMachine(false);
+  const [isActive, toggle] = useToggleMachine();
 
   return <button onClick={toggle}>Click me ({isActive ? "✅" : "❌"})</button>;
 };
