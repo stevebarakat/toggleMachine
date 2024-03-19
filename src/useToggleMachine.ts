@@ -22,23 +22,15 @@ const toggleMachine = createMachine({
 });
 
 export const useToggleMachine = (): [boolean, () => void] => {
+  let isActive = false;
   const toggleActor = createActor(toggleMachine);
   toggleActor.subscribe((snapshot) => {
     console.log(snapshot.value); // 'inactive' or 'active'
+    isActive = snapshot.value === "active";
   });
   toggleActor.start();
   // logs 'inactive'
 
-  toggleActor.send({ type: "TOGGLE" });
-  // logs 'active'
-
-  toggleActor.send({ type: "TOGGLE" });
-  // logs 'inactive'
-
-  const isActive = useSelector(
-    toggleActor,
-    (snapshot) => snapshot.context.user
-  );
   const toggle = () => toggleActor.send({ type: "TOGGLE" });
 
   return [isActive, toggle];
