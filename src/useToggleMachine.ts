@@ -4,7 +4,7 @@ import { createMachine } from "xstate";
 export const useToggleMachine = (
   initialActive: boolean = false
 ): [boolean, () => void] => {
-  const [state, send] = useMachine(() =>
+  const [state, send] = useMachine(
     createMachine({
       id: "toggle",
       initial: initialActive ? "active" : "inactive",
@@ -20,7 +20,7 @@ export const useToggleMachine = (
   );
 
   const isActive = state.matches("active");
-  const toggle = () => send("TOGGLE");
+  const toggle = () => send({ type: "TOGGLE" });
 
   return [isActive, toggle];
 };
