@@ -1,4 +1,6 @@
-import { createMachine, createActor } from "xstate";
+import { useActorRef, useSelector } from "@xstate/react";
+import { useCallback } from "react";
+import { createMachine } from "xstate";
 
 const toggleMachine = createMachine({
   initial: "inactive",
@@ -20,16 +22,14 @@ const toggleMachine = createMachine({
   },
 });
 
-export const useToggleMachine = (): [boolean, () => void] => {
-  let isActive = false;
-  const toggleActor = createActor(toggleMachine);
-  toggleActor.subscribe((snapshot) => {
-    isActive = snapshot.matches("active");
-    console.log("isActive", isActive);
-  });
-  toggleActor.start();
+export const useToggleMachine = () => {
+  const toggleActor = useActorRef(toggleMachine);
+  const isActive = useSelector(toggleActor, (s) => s.matches("active"));
 
-  const toggle = () => toggleActor.send({ type: "TOGGLE" });
+  const toggle = useCallback(
+    () => toggleActor.send({ type: "TOGGLE" }),
+    [toggleActor]
+  );
 
   return [isActive, toggle];
 };
