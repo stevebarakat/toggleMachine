@@ -1,10 +1,10 @@
-import Toggler from "./Toggler";
+import Toggle from "./Toggle";
 
 function App() {
   return (
     <div className="App">
-      <h1>Example: useToggleMachine Hook</h1>
-      <Toggler />
+      <h1>useToggleMachine</h1>
+      <Toggle />
     </div>
   );
 }

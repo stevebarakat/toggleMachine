@@ -1,4 +1,3 @@
-import { useMachine, useSelector } from "@xstate/react";
 import { createMachine, createActor } from "xstate";
 
 const toggleMachine = createMachine({
@@ -25,11 +24,10 @@ export const useToggleMachine = (): [boolean, () => void] => {
   let isActive = false;
   const toggleActor = createActor(toggleMachine);
   toggleActor.subscribe((snapshot) => {
-    console.log(snapshot.value); // 'inactive' or 'active'
-    isActive = snapshot.value === "active";
+    isActive = snapshot.matches("active");
+    console.log("isActive", isActive);
   });
   toggleActor.start();
-  // logs 'inactive'
 
   const toggle = () => toggleActor.send({ type: "TOGGLE" });
 
